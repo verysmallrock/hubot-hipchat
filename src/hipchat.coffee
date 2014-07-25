@@ -83,6 +83,7 @@ class HipChat extends Adapter
       password: process.env.HUBOT_HIPCHAT_PASSWORD
       token: process.env.HUBOT_HIPCHAT_TOKEN or null
       rooms: process.env.HUBOT_HIPCHAT_ROOMS or "All"
+      rooms_api_ids: process.env.HUBOT_HIPCHAT_ROOM_IDS
       rooms_blacklist: process.env.HUBOT_HIPCHAT_ROOMS_BLACKLIST or ""
       host: process.env.HUBOT_HIPCHAT_HOST or null
       autojoin: process.env.HUBOT_HIPCHAT_JOIN_ROOMS_ON_INVITE isnt "false"
@@ -94,6 +95,8 @@ class HipChat extends Adapter
     # create Connector object
     connector = new Connector
       bot_name: @options.bot_name
+      api_rooms_ids: @options.rooms_api_ids
+      api_room_jids: @options.rooms
       token: @options.token
       jid: @options.jid
       password: @options.password

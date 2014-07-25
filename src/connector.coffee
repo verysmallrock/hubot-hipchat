@@ -55,6 +55,8 @@ module.exports = class Connector extends EventEmitter
     @setMaxListeners 0
     
     @api_bot_name = options.bot_name
+    @api_room_ids = options.api_rooms_ids
+    @api_room_jids = options.api_room_jids # if sending messages to these rooms, we'll use the API instead of xmpp
     @api_token = options.token
 
     @jabber = null
@@ -224,7 +226,11 @@ module.exports = class Connector extends EventEmitter
     parsedJid = new xmpp.JID targetJid
 
     if parsedJid.domain is @mucDomain
-      @hipchatPost(targetJid, message)
+      roomsIdArr = @api_room_ids.split ','
+      roomsJidArr = @api_room_jids.split ','
+  
+      jidIndex = roomsJidArr.indexOf targetJid
+      @hipchatPost(roomsIdArr[jidIndex], message)
     else
       packet = new xmpp.Element "message",
         to: targetJid
@@ -250,7 +256,7 @@ module.exports = class Connector extends EventEmitter
     hipchat.notify = notify
     hipchat.message_format = message_format
 
-    params = encodeURI("room_id=Test&from=#{from}&message=#{msg}&color=#{color}&message_format=#{message_format}&notify=#{notify}")
+    params = encodeURI("room_id=#{roomId}&from=#{from}&message=#{msg}&color=#{color}&message_format=#{message_format}&notify=#{notify}")
     HttpClient.create("https://api.hipchat.com/v1/rooms/message?format=json&auth_token=#{authToken}")
     .header('Content-Type', 'application/x-www-form-urlencoded')
     .post(params) (err, res, body) ->
