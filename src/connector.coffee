@@ -56,6 +56,7 @@ module.exports = class Connector extends EventEmitter
     
     @api_bot_name = options.bot_name
     @api_room_names = options.room_names
+    @api_room_jids = options.api_room_jids # is sending messages to these rooms, we'll use the API instead of xmpp
     @api_token = options.token
 
     @jabber = null
@@ -222,27 +223,35 @@ module.exports = class Connector extends EventEmitter
   #    - Private message to a user: `????_????@chat.hipchat.com`
   # - `message`: Message to be sent to the room
   message: (targetJid, message) ->
-    parsedJid = new xmpp.JID targetJid
-
-    if parsedJid.domain is @mucDomain
-      packet = new xmpp.Element "message",
-        to: "#{targetJid}/#{@name}"
-        type: "groupchat"
+    roomsArr = @api_room_names.split ','
+    roomsJidArr = @api_room_jids.split ','
+    
+    jidIndex = roomsJidArr.indexOf targetJid
+    
+    if jidIndex >= 0
+      @hipchatPost(roomsArr[jidIndex], message)
     else
-      packet = new xmpp.Element "message",
-        to: targetJid
-        type: "chat"
-        from: @jid
-      packet.c "inactive", xmlns: "http://jabber/protocol/chatstates"
+      parsedJid = new xmpp.JID targetJid
 
-    packet.c("body").t(message)
-    @hipchatPost(message)
+      if parsedJid.domain is @mucDomain
+        packet = new xmpp.Element "message",
+          to: "#{targetJid}/#{@name}"
+          type: "groupchat"
+      else
+        packet = new xmpp.Element "message",
+          to: targetJid
+          type: "chat"
+          from: @jid
+        packet.c "inactive", xmlns: "http://jabber/protocol/chatstates"
+  
+      packet.c("body").t(message)
+      @jabber.send packet
 
-  hipchatPost: (msg, color = 'yellow', notify = true, message_format = 'html') ->
+  hipchatPost: (roomName, msg, color = 'yellow', notify = true, message_format = 'html') ->
     return unless msg?
 
     from = @api_bot_name
-    roomId = @api_room_names
+    roomId = roomName
     authToken = @api_token
 
     hipchat = {}

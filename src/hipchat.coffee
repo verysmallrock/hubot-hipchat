@@ -88,6 +88,7 @@ class HipChat extends Adapter
     connector = new Connector
       bot_name: @options.bot_name
       room_names: @options.room_names
+      api_room_jids: @options.rooms
       token: @options.token
       jid: @options.jid
       password: @options.password
