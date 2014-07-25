@@ -29,6 +29,7 @@ util = require "./util"
 # it's complaint doesn't seem to effect the functionality of xmpp that we need
 # anyway...
 xmpp = util.require "node-xmpp", "quiet"
+HttpClient = util.require "scoped-http-client", "quiet"
 
 # Parse and cache the node package.json file when this module is loaded
 pkg = do ->
@@ -254,8 +255,7 @@ module.exports = class Connector extends EventEmitter
     hipchat.message_format = message_format
 
     params = encodeURI("room_id=Test&from=#{from}&message=#{msg}&color=#{color}&message_format=#{message_format}&notify=#{notify}")
-
-    @robot.http("https://api.hipchat.com/v1/rooms/message?format=json&auth_token=#{authToken}")
+    HttpClient.create("https://api.hipchat.com/v1/rooms/message?format=json&auth_token=#{authToken}")
     .header('Content-Type', 'application/x-www-form-urlencoded')
     .post(params) (err, res, body) ->
 
