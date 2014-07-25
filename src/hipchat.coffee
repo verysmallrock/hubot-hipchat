@@ -31,12 +31,8 @@ class HipChat extends Adapter
     if not target_jid
       return @logger.error "ERROR: Not sure who to send to: envelope=#{inspect envelope}"
 
-    if target_jid == room
-      # send messages using hipchat API
-      @hipchatPost(str)
-    else
-      for str in strings
-        @connector.message target_jid, str
+    # send messages using hipchat API
+    @hipchatPost(str)
 
   hipchatPost: (msg, color = 'yellow', notify = true, message_format = 'html') ->
     return unless msg?
