@@ -52,6 +52,10 @@ module.exports = class Connector extends EventEmitter
   constructor: (options={}) ->
     @once "connect", (->) # listener bug in Node 0.4.2
     @setMaxListeners 0
+    
+    @api_bot_name = options.bot_name
+    @api_room_names = options.room_names
+    @api_token = option.token
 
     @jabber = null
     @keepalive = null
@@ -236,9 +240,9 @@ module.exports = class Connector extends EventEmitter
   hipchatPost: (msg, color = 'yellow', notify = true, message_format = 'html') ->
     return unless msg?
 
-    from = @options.bot_name
-    roomId = @options.room_names
-    authToken = @option.token
+    from = @api_bot_name
+    roomId = @api_room_names
+    authToken = @api_token
 
     hipchat = {}
 
