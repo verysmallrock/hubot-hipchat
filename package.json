@@ -18,13 +18,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "http://github.com/hipchat/hubot-hipchat.git"
+    "url": "https://github.com/verysmallrock/hubot-hipchat.git"
   },
   "license": "MIT",
   "main": "./src/hipchat",
   "dependencies": {
     "node-xmpp": "~0.12.0",
     "underscore": "~1.4.4",
-    "rsvp": "~1.2.0"
+    "rsvp": "~1.2.0",
+    "scoped-http-client": ">=0.9.8"
   }
 }
