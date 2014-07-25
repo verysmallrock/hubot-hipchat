@@ -31,30 +31,8 @@ class HipChat extends Adapter
     if not target_jid
       return @logger.error "ERROR: Not sure who to send to: envelope=#{inspect envelope}"
 
-    # send messages using hipchat API
-    @hipchatPost(str)
-
-  hipchatPost: (msg, color = 'yellow', notify = true, message_format = 'html') ->
-    return unless msg?
-  
-    from = @options.bot_name
-    roomId = @options.room_names
-    authToken = @option.token
-  
-    hipchat = {}
-  
-    hipchat.message = msg
-    hipchat.room_id = roomId
-    hipchat.from = from if from
-    hipchat.color = color
-    hipchat.notify = notify
-    hipchat.message_format = message_format
-  
-    params = encodeURI("room_id=Test&from=#{from}&message=#{msg}&color=#{color}&message_format=#{message_format}&notify=#{notify}")
-  
-    @robot.http("https://api.hipchat.com/v1/rooms/message?format=json&auth_token=#{authToken}")
-    .header('Content-Type', 'application/x-www-form-urlencoded')
-    .post(params) (err, res, body) ->
+    for str in strings
+      @connector.message target_jid, str
 
   topic: (envelope, message) ->
     {user, room} = envelope

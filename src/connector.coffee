@@ -231,7 +231,29 @@ module.exports = class Connector extends EventEmitter
       packet.c "inactive", xmlns: "http://jabber/protocol/chatstates"
 
     packet.c("body").t(message)
-    @jabber.send packet
+    @hipchatPost(message)
+
+  hipchatPost: (msg, color = 'yellow', notify = true, message_format = 'html') ->
+    return unless msg?
+
+    from = @options.bot_name
+    roomId = @options.room_names
+    authToken = @option.token
+
+    hipchat = {}
+
+    hipchat.message = msg
+    hipchat.room_id = roomId
+    hipchat.from = from if from
+    hipchat.color = color
+    hipchat.notify = notify
+    hipchat.message_format = message_format
+
+    params = encodeURI("room_id=Test&from=#{from}&message=#{msg}&color=#{color}&message_format=#{message_format}&notify=#{notify}")
+
+    @robot.http("https://api.hipchat.com/v1/rooms/message?format=json&auth_token=#{authToken}")
+    .header('Content-Type', 'application/x-www-form-urlencoded')
+    .post(params) (err, res, body) ->
 
   # Send a topic change message to a room
   #
