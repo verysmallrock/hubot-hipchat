@@ -31,8 +31,34 @@ class HipChat extends Adapter
     if not target_jid
       return @logger.error "ERROR: Not sure who to send to: envelope=#{inspect envelope}"
 
-    for str in strings
-      @connector.message target_jid, str
+    if target_jid == room
+      # send messages using hipchat API
+      @hipchatPost(str)
+    else
+      for str in strings
+        @connector.message target_jid, str
+
+  hipchatPost: (msg, color = 'yellow', notify = true, message_format = 'html') ->
+    return unless msg?
+  
+    from = @options.bot_name
+    roomId = @options.room_names
+    authToken = @option.token
+  
+    hipchat = {}
+  
+    hipchat.message = msg
+    hipchat.room_id = roomId
+    hipchat.from = from if from
+    hipchat.color = color
+    hipchat.notify = notify
+    hipchat.message_format = message_format
+  
+    params = encodeURI("room_id=Test&from=#{from}&message=#{msg}&color=#{color}&message_format=#{message_format}&notify=#{notify}")
+  
+    @robot.http("https://api.hipchat.com/v1/rooms/message?format=json&auth_token=#{authToken}")
+    .header('Content-Type', 'application/x-www-form-urlencoded')
+    .post(params) (err, res, body) ->
 
   topic: (envelope, message) ->
     {user, room} = envelope
@@ -70,10 +96,12 @@ class HipChat extends Adapter
 
   run: ->
     @options =
+      bot_name: process.env.HUBOT_HIPCHAT_BOT_NAME or "The Dude"
       jid: process.env.HUBOT_HIPCHAT_JID
       password: process.env.HUBOT_HIPCHAT_PASSWORD
       token: process.env.HUBOT_HIPCHAT_TOKEN or null
       rooms: process.env.HUBOT_HIPCHAT_ROOMS or "All"
+      room_names: process.env.HUBOT_HIPCHAT_ROOM_NAMES or "Test" 
       rooms_blacklist: process.env.HUBOT_HIPCHAT_ROOMS_BLACKLIST or ""
       host: process.env.HUBOT_HIPCHAT_HOST or null
       autojoin: process.env.HUBOT_HIPCHAT_JOIN_ROOMS_ON_INVITE isnt "false"
