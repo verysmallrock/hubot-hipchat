@@ -55,7 +55,7 @@ module.exports = class Connector extends EventEmitter
     
     @api_bot_name = options.bot_name
     @api_room_names = options.room_names
-    @api_token = option.token
+    @api_token = options.token
 
     @jabber = null
     @keepalive = null
