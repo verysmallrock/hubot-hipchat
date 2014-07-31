@@ -241,7 +241,7 @@ module.exports = class Connector extends EventEmitter
       packet.c("body").t(message)
       @jabber.send packet
 
-  hipchatPost: (roomId, msg, color = 'yellow', notify = true, message_format = 'html') ->
+  hipchatPost: (roomId, msg, color = 'yellow', notify = 1, message_format = 'html') ->
     return unless msg?
 
     from = @api_bot_name
