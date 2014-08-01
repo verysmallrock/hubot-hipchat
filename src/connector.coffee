@@ -256,7 +256,7 @@ module.exports = class Connector extends EventEmitter
     hipchat.notify = notify
     hipchat.message_format = message_format
 
-    params = encodeURI("room_id=#{roomId}&from=#{from}&message=#{msg}&color=#{color}&message_format=#{message_format}&notify=#{notify}")
+    params = "room_id=#{roomId}&from=#{from}&message=#{encodeURIComponent(msg)}&color=#{color}&message_format=#{message_format}&notify=#{notify}"
     HttpClient.create("https://api.hipchat.com/v1/rooms/message?format=json&auth_token=#{authToken}")
     .header('Content-Type', 'application/x-www-form-urlencoded')
     .post(params) (err, res, body) ->
