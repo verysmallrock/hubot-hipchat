@@ -224,7 +224,6 @@ module.exports = class Connector extends EventEmitter
   # - `message`: Message to be sent to the room
   message: (targetJid, message) ->
     parsedJid = new xmpp.JID targetJid
-
     if parsedJid.domain is @mucDomain
       roomsIdArr = @api_room_ids.split ','
       roomsJidArr = @api_room_jids.split ','
@@ -241,13 +240,17 @@ module.exports = class Connector extends EventEmitter
       packet.c("body").t(message)
       @jabber.send packet
 
-  hipchatPost: (roomId, msg, color = 'yellow', notify = 1, message_format = 'html') ->
+  hipchatPost: (roomId, msg, color = 'yellow', notify = 1, message_format = null) ->
     return unless msg?
 
     from = @api_bot_name
     authToken = @api_token
 
     hipchat = {}
+    
+    unless message_format?
+      isHtml = /<.*>/.test(message)
+      message_format = if isHtml then 'html' else 'text'
 
     hipchat.message = msg
     hipchat.room_id = roomId
