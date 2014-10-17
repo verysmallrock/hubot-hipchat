@@ -249,7 +249,7 @@ module.exports = class Connector extends EventEmitter
     hipchat = {}
     
     unless message_format?
-      isHtml = /<.*>/.test(message)
+      isHtml = /<.*>/.test(msg)
       message_format = if isHtml then 'html' else 'text'
 
     hipchat.message = msg
